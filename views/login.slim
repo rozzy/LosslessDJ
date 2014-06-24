@@ -1,6 +1,7 @@
 form id="login_form" action='/login' method='POST'
   input type="email" required="required" name="email" placeholder="Enter your registered email" size='22'
   input.resettable.hidden type="text" maxlength="4" name="code" placeholder="Enter code"
+  span.response_status.resettable.hidden
   br
   input type='submit' value='Send me authorization link'
   input.resettable.hidden#cancel type='button' value='Cancel'

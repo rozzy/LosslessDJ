@@ -4,6 +4,7 @@ require 'sinatra/cookies'
 require 'json'
 require 'mail'
 require 'slim'
+require 'memorable_password'
 require 'compass'
 
 require './env'
@@ -20,12 +21,15 @@ class LosslessDJ < Sinatra::Base
     cookies[:authorized] = true
   end
 
-  def authorization_mail email
+  def authorization_mail email, uid
+    code = MemorablePassword.new.generate(length:10).upcase
+    new_secret = Secrets.create(users_id: uid.to_i, secret_code: code)
+
     Mail.deliver do
       to      email
       from    'lossless.pocket.dj@gmail.com'
-      subject 'testing sendmail'
-      body    'testing sendmail'
+      subject 'Lossossless: Login Access'
+      body    "Your login code: #{code}."
     end
   end
 
@@ -57,13 +61,14 @@ class LosslessDJ < Sinatra::Base
   end
 
   post '/login' do
-    error = "Wrong credentials"
-    return error if !params[:email] or params[:email] == ""
-    users = Users.where(actual_email: params[:email])
-    return error if users.size == 0
     content_type :json
-    authorization_mail params[:email]
-    {success: true, response: "Check your e-mail"}.to_json
+    user = Users.where(actual_email: params[:email])
+    if user.exists?
+      authorization_mail params[:email], user.take![:id]
+      {success: true, response: "Check your e-mail"}.to_json
+    else
+      {success: false, response: "Wrong credentials"}.to_json
+    end
   end
 
   get '/invite' do
