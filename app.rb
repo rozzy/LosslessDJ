@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'sinatra/activerecord'
 require 'sinatra/cookies'
+require 'json'
 require 'mail'
 require 'slim'
 require 'compass'
@@ -19,9 +20,9 @@ class LosslessDJ < Sinatra::Base
     cookies[:authorized] = true
   end
 
-  def authorization_mail
+  def authorization_mail email
     Mail.deliver do
-      to      'berozzy@gmail.com'
+      to      email
       from    'lossless.pocket.dj@gmail.com'
       subject 'testing sendmail'
       body    'testing sendmail'
@@ -39,6 +40,10 @@ class LosslessDJ < Sinatra::Base
   get '/*.css' do |filename|
     style = "#{settings.public_folder}/#{filename}.css"
     return File.read(style) if File.exists?(style)
+
+    # TODO: Setup production sass compiling
+    # Compass.compiler.compile("#{filename}.sass", "#{filename}.css") if ENV['RACK_ENV'] == "production"
+
     sass :"styles/#{filename}", Compass.sass_engine_options
     .merge(style: :compressed)
   end
@@ -49,6 +54,16 @@ class LosslessDJ < Sinatra::Base
 
   get '/login' do
     slim :login
+  end
+
+  post '/login' do
+    error = "Wrong credentials"
+    return error if !params[:email] or params[:email] == ""
+    users = Users.where(actual_email: params[:email])
+    return error if users.size == 0
+    content_type :json
+    authorization_mail params[:email]
+    {success: true, response: "Check your e-mail"}.to_json
   end
 
   get '/invite' do
