@@ -6,6 +6,7 @@ require 'slim'
 require 'compass'
 
 require './env'
+require './schemes'
 
 class LosslessDJ < Sinatra::Base
   helpers Sinatra::Cookies

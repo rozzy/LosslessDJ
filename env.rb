@@ -1,5 +1,6 @@
 configure do
   db = URI.parse('postgres://root:@localhost/lossless_dj')
+  set :show_exceptions, true
 
   ActiveRecord::Base.establish_connection(
     :adapter  => db.scheme == 'postgres' ? 'postgresql' : db.scheme,

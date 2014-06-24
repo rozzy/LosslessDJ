@@ -11,12 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140624111136) do
+ActiveRecord::Schema.define(version: 20140624114758) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "user_list", force: true do |t|
+  create_table "users", force: true do |t|
     t.string "actual_login", limit: 64
     t.string "actual_email", limit: 64
   end
