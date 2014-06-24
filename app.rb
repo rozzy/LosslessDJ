@@ -28,12 +28,19 @@ class LosslessDJ < Sinatra::Base
     end
   end
 
-  before %r{/(?!login|invite)} do
+  before %r{/(?!login|invite|(.[^\.]))} do |url|
     redirect to '/login' if not authorized?
   end
 
   error do
     redirect '/error'
+  end
+
+  get '/*.css' do |filename|
+    style = "#{settings.public_folder}/#{filename}.css"
+    return File.read(style) if File.exists?(style)
+    sass :"styles/#{filename}", Compass.sass_engine_options
+    .merge(style: :compressed)
   end
 
   get '/' do
