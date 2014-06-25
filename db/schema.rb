@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140624162847) do
+ActiveRecord::Schema.define(version: 20140625104840) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,6 +22,23 @@ ActiveRecord::Schema.define(version: 20140624162847) do
     t.datetime "expires"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "confirmed",              default: false
+    t.boolean  "forced",                 default: false
+  end
+
+  create_table "sessions", force: true do |t|
+    t.integer  "user_id"
+    t.string   "secret_code",                            null: false
+    t.string   "session_ip",  limit: 20
+    t.datetime "expires"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "useragent",                              null: false
+    t.boolean  "forced",                 default: false
+    t.boolean  "exited",                 default: false
+    t.boolean  "expired",                default: false
+    t.datetime "last_visit"
+    t.string   "secret_key"
   end
 
   create_table "users", force: true do |t|

@@ -8,3 +8,6 @@ head
   script src='/script.js'
 body
   == yield
+  span
+    ' Logged:
+    = authorized? @request
